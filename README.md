@@ -2,12 +2,7 @@
 
 //效果图
 
-![Image text](https://github.com/wangzhaomeng/LLVideoPlayer/blob/master/LLVideoPlayer-横屏.png?raw=true)
-![Image text](https://github.com/wangzhaomeng/LLVideoPlayer/blob/master/LLVideoPlayer-竖屏.png?raw=true)
-![Image text](https://github.com/wangzhaomeng/LLVideoPlayer/blob/master/LLVideoPlayer-竖屏.png?raw=true)
-
-//使用
-```
-LLVideoPlayerViewController *videoPlayerVC = [[LLVideoPlayerViewController alloc] initWithVideoUrl:_fileURL];
-[self presentViewController:videoPlayerVC animated:YES completion:nil];
+![Image text](https://github.com/wangzhaomeng/LLAudioPlayer/blob/master/LLAudioPlayer-播放界面.png?raw=true)
+![Image text](https://github.com/wangzhaomeng/LLAudioPlayer/blob/master/LLAudioPlayer-歌曲列表.png?raw=true)
+![Image text](https://github.com/wangzhaomeng/LLAudioPlayer/blob/master/LLAudioPlayer-锁屏界面.jpg?raw=true)
 

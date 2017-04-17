@@ -21,6 +21,7 @@ typedef enum {
 
 @interface LLAudioPlayerViewController ()<AVAudioPlayerDelegate,UITableViewDelegate,UITableViewDataSource,LLPopupAnimatorDelegate>
 
+@property (nonatomic, assign) UIBackgroundTaskIdentifier bgTaskId;      //后台播放id
 @property (nonatomic, strong) AVPlayer          *audioPlayer;            //音频播放器
 @property (nonatomic, strong) UIButton          *playBtn;                //播放按钮
 @property (nonatomic, strong) UISlider          *progressSlider;         //播放进度
@@ -45,11 +46,6 @@ typedef enum {
 @implementation LLAudioPlayerViewController
 
 #pragma mark - UIViewController生命周期
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [UIApplication sharedApplication].idleTimerDisabled = YES;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     //监听音频播放结束
@@ -58,15 +54,29 @@ typedef enum {
     //监听音频播放中断
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieInterruption:) name:AVAudioSessionInterruptionNotification object:nil];
     
-    //响应锁屏处理事件
-    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    //注册后台播放
+    _bgTaskId = [self backgroundPlayerID:_bgTaskId];
     
     [self createViews];
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    [UIApplication sharedApplication].idleTimerDisabled = NO;
+//实现一下backgroundPlayerID:这个方法:
+- (UIBackgroundTaskIdentifier)backgroundPlayerID:(UIBackgroundTaskIdentifier)backTaskId
+{
+    //设置并激活音频会话类别
+    AVAudioSession *session=[AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategoryPlayback error:nil];
+    [session setActive:YES error:nil];
+    //允许应用程序接收远程控制
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    //设置后台任务ID
+    UIBackgroundTaskIdentifier newTaskId=UIBackgroundTaskInvalid;
+    newTaskId=[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
+    if(newTaskId!=UIBackgroundTaskInvalid&&backTaskId!=UIBackgroundTaskInvalid)
+    {
+        [[UIApplication sharedApplication] endBackgroundTask:backTaskId];
+    }
+    return newTaskId;
 }
 
 - (BOOL)prefersStatusBarHidden {

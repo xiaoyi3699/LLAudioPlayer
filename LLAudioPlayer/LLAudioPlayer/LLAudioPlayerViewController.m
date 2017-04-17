@@ -7,7 +7,10 @@
 //
 
 #import "LLAudioPlayerViewController.h"
-#import "LLFileModel.h"
+#import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
+#import "LLPopupAnimator.h"
+#import "LLGifView.h"
 
 typedef enum {
     LLAudioPlayStyleOrder  = 0, //顺序播放
@@ -42,9 +45,9 @@ typedef enum {
 @implementation LLAudioPlayerViewController
 
 #pragma mark - UIViewController生命周期
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [UIApplication sharedApplication].idleTimerDisabled = YES;
 }
 
 - (void)viewDidLoad {
@@ -54,16 +57,24 @@ typedef enum {
     
     //监听音频播放中断
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieInterruption:) name:AVAudioSessionInterruptionNotification object:nil];
+    
+    //响应锁屏处理事件
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    
+    [self createViews];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [UIApplication sharedApplication].idleTimerDisabled = NO;
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return YES;
 }
 
 #pragma mark - 创建UI视图
 - (void)createViews {
-    [super createViews];
     
     _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 44)];
     _topView.backgroundColor = R_G_B_A(30, 30, 30, .5);
@@ -196,7 +207,7 @@ typedef enum {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    return _audioFilePaths.count;
+    return _flieModels.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -206,8 +217,8 @@ typedef enum {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.backgroundColor = [UIColor clearColor];
     }
-    if (_audioFilePaths.count > indexPath.row) {
-        LLFileModel *model = _audioFilePaths[indexPath.row];
+    if (_flieModels.count > indexPath.row) {
+        LLFileModel *model = _flieModels[indexPath.row];
         cell.textLabel.text = [model.fileName lastPathComponent];
         if (indexPath.row == _currentAudioIndex) {
             cell.textLabel.textColor = [UIColor redColor];
@@ -220,7 +231,7 @@ typedef enum {
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (_audioFilePaths.count > indexPath.row) {
+    if (_flieModels.count > indexPath.row) {
         [[LLPopupAnimator animator] dismiss];
         _currentAudioIndex = indexPath.row;
         [self refreshAudioPlayerWithIndex:_currentAudioIndex];
@@ -230,43 +241,55 @@ typedef enum {
 #pragma mark - 播放器相关
 //根据索引值，播放相应音频
 - (void)refreshAudioPlayerWithIndex:(NSInteger)index {
-    if (index < 0 || index >= _audioFilePaths.count) return;
+    if (index < 0 || index >= _flieModels.count) return;
     
     if (_audioPlayer) {
         [_audioPlayer pause];
+        [_audioPlayer.currentItem removeObserver:self forKeyPath:@"status"];
         _audioPlayer = nil;
     }
     
     [_audioListTableView reloadData];
     
-    LLFileModel *model = _audioFilePaths[index];
-    _titleLabel.text = [[[model.fileName lastPathComponent] componentsSeparatedByString:@"."] firstObject];
-    NSURL *fileURL = [NSURL URLWithString:model.filePath];
-    if (fileURL == nil) {
-        fileURL = [NSURL fileURLWithPath:model.filePath];
-    }
-    _currentTime.text = @"00:00";
-    _totalTime.text = @"00:00";
-    _progressSlider.value = 0.0;
-    [self playWith:fileURL];
+    LLFileModel *model = _flieModels[index];
+    [self playWithFileModel:model];
 }
 
 //url：文件路径或文件网络地址
-- (void)playWith:(NSURL *)url
+- (void)playWithFileModel:(LLFileModel *)model
 {
     _gifView.hidden = YES;
+    _currentTime.text = @"00:00";
+    _totalTime.text = @"00:00";
+    _progressSlider.value = 0.0;
+    _titleLabel.text = [[[model.fileName lastPathComponent] componentsSeparatedByString:@"."] firstObject];
+    NSURL *fileURL;
+    if (model.filePath) {
+        fileURL = [NSURL URLWithString:model.filePath];
+        if (fileURL == nil) {
+            fileURL = [NSURL fileURLWithPath:model.filePath];
+        }
+    }
+    else {
+        fileURL = [NSURL URLWithString:@""];
+    }
+    
     //加载视频资源的类
-    AVURLAsset *asset = [AVURLAsset assetWithURL:url];
+    AVURLAsset *asset = [AVURLAsset assetWithURL:fileURL];
     //AVURLAsset 通过tracks关键字会将资源异步加载在程序的一个临时内存缓冲区中
     [asset loadValuesAsynchronouslyForKeys:[NSArray arrayWithObject:@"tracks"] completionHandler:^{
         //能够得到资源被加载的状态
-        AVKeyValueStatus status = [asset statusOfValueForKey:@"tracks" error:nil];
+        NSError *error;
+        AVKeyValueStatus status = [asset statusOfValueForKey:@"tracks" error:&error];
         //如果资源加载完成,开始进行播放
         if (status == AVKeyValueStatusLoaded) {
             //将加载好的资源放入AVPlayerItem 中，item中包含视频资源数据,视频资源时长、当前播放的时间点等信息
             AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:asset];
+            //监听准备播放状态属性<切记，要在释放item的时候移除监听>
+            [item addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
             _audioPlayer = [[AVPlayer alloc] initWithPlayerItem:item];
             [_audioPlayer play];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 _playBtn.selected = YES;
                 _gifView.hidden = NO;
@@ -299,12 +322,81 @@ typedef enum {
     }];
 }
 
+#pragma mark - 设置锁屏界面
+//监听播放开始，设置锁屏界面的播放进度
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary<NSString *,id> *)change
+                       context:(void *)context {
+    
+    if ([keyPath isEqualToString:@"status"]) {
+        LLFileModel *model = _flieModels[_currentAudioIndex];
+        [self setPlayingInfoCenterWithModel:model];
+    }
+}
+
+//设置锁屏界面
+- (void)setPlayingInfoCenterWithModel:(LLFileModel *)fileModel {
+    Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
+    if (playingInfoCenter) {
+        NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
+        
+        MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage:fileModel.coverImage];
+        //歌曲名称
+        [songInfo setObject:fileModel.fileName forKey:MPMediaItemPropertyTitle];
+        //演唱者
+        [songInfo setObject:fileModel.artist forKey:MPMediaItemPropertyArtist];
+        //专辑名
+        [songInfo setObject:fileModel.albumTitle forKey:MPMediaItemPropertyAlbumTitle];
+        //专辑缩略图
+        [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+        [songInfo setObject:[NSNumber numberWithInt:(int)CMTimeGetSeconds(_audioPlayer.currentItem.duration)] forKey:MPMediaItemPropertyPlaybackDuration];
+        [songInfo setObject: [NSNumber numberWithInt:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+        
+        //设置锁屏状态下屏幕显示音乐信息
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
+    }
+}
+
+//锁屏界面的用户交互
+- (void) remoteControlReceivedWithEvent: (UIEvent *) receivedEvent {
+    
+    if (receivedEvent.type == UIEventTypeRemoteControl) {
+        
+        if (receivedEvent.subtype == UIEventSubtypeRemoteControlPreviousTrack) {//上一首
+            if (_currentAudioIndex == 0) {
+                _currentAudioIndex = _flieModels.count - 1;
+            }
+            else {
+                _currentAudioIndex --;
+            }
+            [self refreshAudioPlayerWithIndex:_currentAudioIndex];
+        }
+        else if (receivedEvent.subtype == UIEventSubtypeRemoteControlNextTrack) {//下一首
+            _currentAudioIndex ++;
+            _currentAudioIndex = _currentAudioIndex%_flieModels.count;
+            [self refreshAudioPlayerWithIndex:_currentAudioIndex];
+        }
+        else if (receivedEvent.subtype == UIEventSubtypeRemoteControlPlay) {//播放
+            _playBtn.selected = YES;
+            [_audioPlayer play];
+            [_gifView resumeGif];
+        }
+        else if (receivedEvent.subtype == UIEventSubtypeRemoteControlPause) {//暂停
+            _playBtn.selected = NO;
+            [_audioPlayer pause];
+            [_gifView pauseGif];
+        }
+    }
+}
+
 #pragma mark - 相关按钮与其他交互事件
 //播放、上一首、下一首
 - (void)btnClick:(UIButton *)btn {
     if (btn.tag == 0) {//上一首
         if (_currentAudioIndex == 0) {
-            _currentAudioIndex = _audioFilePaths.count - 1;
+            _currentAudioIndex = _flieModels.count - 1;
         }
         else {
             _currentAudioIndex --;
@@ -325,7 +417,7 @@ typedef enum {
     }
     else {//下一首
         _currentAudioIndex ++;
-        _currentAudioIndex = _currentAudioIndex%_audioFilePaths.count;
+        _currentAudioIndex = _currentAudioIndex%_flieModels.count;
         [self refreshAudioPlayerWithIndex:_currentAudioIndex];
     }
 }
@@ -380,8 +472,8 @@ typedef enum {
 - (void)showAudioList:(UIButton *)btn {
     if (btn.selected == NO) {
         btn.selected = YES;
-        if (_audioFilePaths.count*44 < SCREEN_HEIGHT-150) {
-            self.audioListTableView.frame = CGRectMake(0, 0, SCREEN_WIDTH, _audioFilePaths.count*44+25);
+        if (_flieModels.count*44 < SCREEN_HEIGHT-150) {
+            self.audioListTableView.frame = CGRectMake(0, 0, SCREEN_WIDTH, _flieModels.count*44+25);
         }
         else {
             self.audioListTableView.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT-150+25);
@@ -404,8 +496,8 @@ typedef enum {
 //音频播放中断
 - (void)movieInterruption:(NSNotification *)notification {
     NSDictionary *interuptionDict = notification.userInfo;
-    NSInteger interuptionType = [[interuptionDict     valueForKey:AVAudioSessionInterruptionTypeKey] integerValue];
-    NSNumber* seccondReason = [[notification userInfo] objectForKey:AVAudioSessionInterruptionOptionKey] ;
+    NSInteger interuptionType = [[interuptionDict valueForKey:AVAudioSessionInterruptionTypeKey] integerValue];
+    NSNumber  *seccondReason  = [[notification userInfo] objectForKey:AVAudioSessionInterruptionOptionKey] ;
     switch (interuptionType) {
         case AVAudioSessionInterruptionTypeBegan:
         {
@@ -439,10 +531,10 @@ typedef enum {
 - (void)moviePlayDidEnd:(NSNotification *)notification {
     if (_audioPlayStyle == LLAudioPlayStyleOrder) {//顺序播放
         _currentAudioIndex ++;
-        _currentAudioIndex = _currentAudioIndex%_audioFilePaths.count;
+        _currentAudioIndex = _currentAudioIndex%_flieModels.count;
     }
     else if (_audioPlayStyle == LLAudioPlayStyleRandom) {//随机播放
-        _currentAudioIndex = random()%_audioFilePaths.count;
+        _currentAudioIndex = random()%_flieModels.count;
     }
     [self refreshAudioPlayerWithIndex:_currentAudioIndex];
 }
@@ -466,13 +558,9 @@ typedef enum {
     return time;
 }
 
-#pragma mark - super method
-- (BOOL)isShowTabBar {
-    return NO;
-}
-
 - (void)dealloc {
     NSLog(@"音乐播放器释放");
+    [_audioPlayer.currentItem removeObserver:self forKeyPath:@"status"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

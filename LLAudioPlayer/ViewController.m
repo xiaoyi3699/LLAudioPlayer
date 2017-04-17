@@ -7,8 +7,11 @@
 //
 
 #import "ViewController.h"
+#import "LLAudioPlayerViewController.h"
 
-@interface ViewController ()
+@interface ViewController (){
+    NSMutableArray *_fileModels;
+}
 
 @end
 
@@ -16,14 +19,28 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
+    NSArray *filePaths = @[@"杜雯媞,王艺翔 - 雪",@"麦振鸿 - 雪见—仙凡之旅",@"毛阿敏 - 相思",@"任月丽 - 风中奇缘"];
+    NSArray *titles = @[@"雪",@"仙凡之旅",@"相思",@"风中奇缘"];
+    NSArray *artists = @[@"杜雯媞,王艺翔",@"麦振鸿",@"毛阿敏",@"任月丽"];
+    _fileModels = [NSMutableArray arrayWithCapacity:4];
+    for (NSInteger i = 0; i < 4; i ++) {
+        LLFileModel *fileModel = [LLFileModel new];
+        fileModel.filePath    = [[NSBundle mainBundle] pathForResource:filePaths[i] ofType:@"mp3"];
+        fileModel.fileName    = titles[i];
+        fileModel.coverImage  = [UIImage imageNamed:@"audioCover"];
+        fileModel.artist      = artists[i];
+        fileModel.albumTitle  = @"个人专辑";
+        [_fileModels addObject:fileModel];
+    }
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (IBAction)play:(id)sender {
+    
+    LLAudioPlayerViewController *audioPlayVC = [[LLAudioPlayerViewController alloc] init];
+    audioPlayVC.flieModels = [_fileModels copy];
+    audioPlayVC.currentAudioIndex = 0;
+    [self presentViewController:audioPlayVC animated:YES completion:nil];
 }
-
 
 @end

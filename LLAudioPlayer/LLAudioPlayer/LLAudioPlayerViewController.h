@@ -6,11 +6,19 @@
 //  Copyright © 2017年 MaoChao Network Co. Ltd. All rights reserved.
 //
 
-#import "LLBaseViewController.h"
+#import <UIKit/UIKit.h>
+#import "LLFileModel.h"
 
-@interface LLAudioPlayerViewController : LLBaseViewController
+@interface LLAudioPlayerViewController : UIViewController
 
-@property (nonatomic, strong) NSArray   *audioFilePaths;
+/**
+ 存放LLFileModel对象
+ */
+@property (nonatomic, strong) NSArray<LLFileModel *> *flieModels;
+
+/**
+ 当前音频的索引
+ */
 @property (nonatomic, assign) NSInteger currentAudioIndex;
 
 @end

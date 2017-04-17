@@ -15,6 +15,21 @@
 		75EB9DA51EA4AA6700A62F83 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9DA31EA4AA6700A62F83 /* LaunchScreen.storyboard */; };
 		75EB9DB01EA4AA6700A62F83 /* LLAudioPlayerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 75EB9DAF1EA4AA6700A62F83 /* LLAudioPlayerTests.m */; };
 		75EB9DBB1EA4AA6700A62F83 /* LLAudioPlayerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 75EB9DBA1EA4AA6700A62F83 /* LLAudioPlayerUITests.m */; };
+		75EB9DCF1EA4AB7700A62F83 /* LLAudioPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75EB9DCA1EA4AB7700A62F83 /* LLAudioPlayerViewController.m */; };
+		75EB9DD01EA4AB7700A62F83 /* LLFileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 75EB9DCC1EA4AB7700A62F83 /* LLFileModel.m */; };
+		75EB9DD11EA4AB7700A62F83 /* LLPopupAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 75EB9DCE1EA4AB7700A62F83 /* LLPopupAnimator.m */; };
+		75EB9DE61EA4AD8900A62F83 /* UIView+LLAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 75EB9DE51EA4AD8900A62F83 /* UIView+LLAudioPlayer.m */; };
+		75EB9DE91EA4AF7C00A62F83 /* LLGifView.m in Sources */ = {isa = PBXBuildFile; fileRef = 75EB9DE81EA4AF7C00A62F83 /* LLGifView.m */; };
+		75EB9DEE1EA4BF7200A62F83 /* defaultAudio.gif in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9DED1EA4BF7200A62F83 /* defaultAudio.gif */; };
+		75EB9DF21EA4BFBE00A62F83 /* player_next.png in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9DEF1EA4BFBE00A62F83 /* player_next.png */; };
+		75EB9DF31EA4BFBE00A62F83 /* player_play.png in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9DF01EA4BFBE00A62F83 /* player_play.png */; };
+		75EB9DF41EA4BFBE00A62F83 /* player_previous.png in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9DF11EA4BFBE00A62F83 /* player_previous.png */; };
+		75EB9DFA1EA4C9B800A62F83 /* 杜雯媞,王艺翔 - 雪.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9DF91EA4C9B800A62F83 /* 杜雯媞,王艺翔 - 雪.mp3 */; };
+		75EB9DFE1EA4CB1A00A62F83 /* 麦振鸿 - 雪见—仙凡之旅.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9DFB1EA4CB1A00A62F83 /* 麦振鸿 - 雪见—仙凡之旅.mp3 */; };
+		75EB9DFF1EA4CB1A00A62F83 /* 毛阿敏 - 相思.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9DFC1EA4CB1A00A62F83 /* 毛阿敏 - 相思.mp3 */; };
+		75EB9E001EA4CB1A00A62F83 /* 任月丽 - 风中奇缘.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9DFD1EA4CB1A00A62F83 /* 任月丽 - 风中奇缘.mp3 */; };
+		75EB9E021EA4D98200A62F83 /* player_pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9E011EA4D98200A62F83 /* player_pause.png */; };
+		75EB9E041EA4EB2300A62F83 /* audioCover.png in Resources */ = {isa = PBXBuildFile; fileRef = 75EB9E031EA4EB2300A62F83 /* audioCover.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +66,26 @@
 		75EB9DB61EA4AA6700A62F83 /* LLAudioPlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LLAudioPlayerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		75EB9DBA1EA4AA6700A62F83 /* LLAudioPlayerUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLAudioPlayerUITests.m; sourceTree = "<group>"; };
 		75EB9DBC1EA4AA6700A62F83 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		75EB9DC91EA4AB7700A62F83 /* LLAudioPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLAudioPlayerViewController.h; sourceTree = "<group>"; };
+		75EB9DCA1EA4AB7700A62F83 /* LLAudioPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LLAudioPlayerViewController.m; sourceTree = "<group>"; };
+		75EB9DCB1EA4AB7700A62F83 /* LLFileModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLFileModel.h; sourceTree = "<group>"; };
+		75EB9DCC1EA4AB7700A62F83 /* LLFileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LLFileModel.m; sourceTree = "<group>"; };
+		75EB9DCD1EA4AB7700A62F83 /* LLPopupAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLPopupAnimator.h; sourceTree = "<group>"; };
+		75EB9DCE1EA4AB7700A62F83 /* LLPopupAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LLPopupAnimator.m; sourceTree = "<group>"; };
+		75EB9DE41EA4AD8900A62F83 /* UIView+LLAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+LLAudioPlayer.h"; sourceTree = "<group>"; };
+		75EB9DE51EA4AD8900A62F83 /* UIView+LLAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+LLAudioPlayer.m"; sourceTree = "<group>"; };
+		75EB9DE71EA4AF7C00A62F83 /* LLGifView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLGifView.h; sourceTree = "<group>"; };
+		75EB9DE81EA4AF7C00A62F83 /* LLGifView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LLGifView.m; sourceTree = "<group>"; };
+		75EB9DED1EA4BF7200A62F83 /* defaultAudio.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = defaultAudio.gif; sourceTree = "<group>"; };
+		75EB9DEF1EA4BFBE00A62F83 /* player_next.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = player_next.png; sourceTree = "<group>"; };
+		75EB9DF01EA4BFBE00A62F83 /* player_play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = player_play.png; sourceTree = "<group>"; };
+		75EB9DF11EA4BFBE00A62F83 /* player_previous.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = player_previous.png; sourceTree = "<group>"; };
+		75EB9DF91EA4C9B800A62F83 /* 杜雯媞,王艺翔 - 雪.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "杜雯媞,王艺翔 - 雪.mp3"; sourceTree = "<group>"; };
+		75EB9DFB1EA4CB1A00A62F83 /* 麦振鸿 - 雪见—仙凡之旅.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "麦振鸿 - 雪见—仙凡之旅.mp3"; sourceTree = "<group>"; };
+		75EB9DFC1EA4CB1A00A62F83 /* 毛阿敏 - 相思.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "毛阿敏 - 相思.mp3"; sourceTree = "<group>"; };
+		75EB9DFD1EA4CB1A00A62F83 /* 任月丽 - 风中奇缘.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "任月丽 - 风中奇缘.mp3"; sourceTree = "<group>"; };
+		75EB9E011EA4D98200A62F83 /* player_pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = player_pause.png; sourceTree = "<group>"; };
+		75EB9E031EA4EB2300A62F83 /* audioCover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = audioCover.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +136,9 @@
 		75EB9D941EA4AA6700A62F83 /* LLAudioPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				75EB9DEC1EA4BF3900A62F83 /* Images */,
+				75EB9DDB1EA4AC6200A62F83 /* Resource */,
+				75EB9DC81EA4AB7700A62F83 /* LLAudioPlayer */,
 				75EB9D981EA4AA6700A62F83 /* AppDelegate.h */,
 				75EB9D991EA4AA6700A62F83 /* AppDelegate.m */,
 				75EB9D9B1EA4AA6700A62F83 /* ViewController.h */,
@@ -138,6 +176,63 @@
 				75EB9DBC1EA4AA6700A62F83 /* Info.plist */,
 			);
 			path = LLAudioPlayerUITests;
+			sourceTree = "<group>";
+		};
+		75EB9DC81EA4AB7700A62F83 /* LLAudioPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				75EB9DC91EA4AB7700A62F83 /* LLAudioPlayerViewController.h */,
+				75EB9DCA1EA4AB7700A62F83 /* LLAudioPlayerViewController.m */,
+				75EB9DEB1EA4B14600A62F83 /* LLFileModel */,
+				75EB9DEA1EA4B12500A62F83 /* LLToolView */,
+			);
+			path = LLAudioPlayer;
+			sourceTree = "<group>";
+		};
+		75EB9DDB1EA4AC6200A62F83 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				75EB9DF91EA4C9B800A62F83 /* 杜雯媞,王艺翔 - 雪.mp3 */,
+				75EB9DFB1EA4CB1A00A62F83 /* 麦振鸿 - 雪见—仙凡之旅.mp3 */,
+				75EB9DFC1EA4CB1A00A62F83 /* 毛阿敏 - 相思.mp3 */,
+				75EB9DFD1EA4CB1A00A62F83 /* 任月丽 - 风中奇缘.mp3 */,
+			);
+			path = Resource;
+			sourceTree = "<group>";
+		};
+		75EB9DEA1EA4B12500A62F83 /* LLToolView */ = {
+			isa = PBXGroup;
+			children = (
+				75EB9DE71EA4AF7C00A62F83 /* LLGifView.h */,
+				75EB9DE81EA4AF7C00A62F83 /* LLGifView.m */,
+				75EB9DCD1EA4AB7700A62F83 /* LLPopupAnimator.h */,
+				75EB9DCE1EA4AB7700A62F83 /* LLPopupAnimator.m */,
+				75EB9DE41EA4AD8900A62F83 /* UIView+LLAudioPlayer.h */,
+				75EB9DE51EA4AD8900A62F83 /* UIView+LLAudioPlayer.m */,
+			);
+			name = LLToolView;
+			sourceTree = "<group>";
+		};
+		75EB9DEB1EA4B14600A62F83 /* LLFileModel */ = {
+			isa = PBXGroup;
+			children = (
+				75EB9DCB1EA4AB7700A62F83 /* LLFileModel.h */,
+				75EB9DCC1EA4AB7700A62F83 /* LLFileModel.m */,
+			);
+			name = LLFileModel;
+			sourceTree = "<group>";
+		};
+		75EB9DEC1EA4BF3900A62F83 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				75EB9E031EA4EB2300A62F83 /* audioCover.png */,
+				75EB9E011EA4D98200A62F83 /* player_pause.png */,
+				75EB9DEF1EA4BFBE00A62F83 /* player_next.png */,
+				75EB9DF01EA4BFBE00A62F83 /* player_play.png */,
+				75EB9DF11EA4BFBE00A62F83 /* player_previous.png */,
+				75EB9DED1EA4BF7200A62F83 /* defaultAudio.gif */,
+			);
+			name = Images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -207,8 +302,13 @@
 				TargetAttributes = {
 					75EB9D911EA4AA6700A62F83 = {
 						CreatedOnToolsVersion = 8.3.1;
-						DevelopmentTeam = 78835ZHBFS;
+						DevelopmentTeam = D83H98L7Y7;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					75EB9DAA1EA4AA6700A62F83 = {
 						CreatedOnToolsVersion = 8.3.1;
@@ -249,9 +349,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75EB9DF41EA4BFBE00A62F83 /* player_previous.png in Resources */,
 				75EB9DA51EA4AA6700A62F83 /* LaunchScreen.storyboard in Resources */,
+				75EB9E001EA4CB1A00A62F83 /* 任月丽 - 风中奇缘.mp3 in Resources */,
+				75EB9DF21EA4BFBE00A62F83 /* player_next.png in Resources */,
+				75EB9DF31EA4BFBE00A62F83 /* player_play.png in Resources */,
+				75EB9DEE1EA4BF7200A62F83 /* defaultAudio.gif in Resources */,
+				75EB9E041EA4EB2300A62F83 /* audioCover.png in Resources */,
+				75EB9DFA1EA4C9B800A62F83 /* 杜雯媞,王艺翔 - 雪.mp3 in Resources */,
 				75EB9DA21EA4AA6700A62F83 /* Assets.xcassets in Resources */,
+				75EB9E021EA4D98200A62F83 /* player_pause.png in Resources */,
 				75EB9DA01EA4AA6700A62F83 /* Main.storyboard in Resources */,
+				75EB9DFE1EA4CB1A00A62F83 /* 麦振鸿 - 雪见—仙凡之旅.mp3 in Resources */,
+				75EB9DFF1EA4CB1A00A62F83 /* 毛阿敏 - 相思.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,8 +387,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				75EB9D9D1EA4AA6700A62F83 /* ViewController.m in Sources */,
+				75EB9DE61EA4AD8900A62F83 /* UIView+LLAudioPlayer.m in Sources */,
 				75EB9D9A1EA4AA6700A62F83 /* AppDelegate.m in Sources */,
+				75EB9DD01EA4AB7700A62F83 /* LLFileModel.m in Sources */,
+				75EB9DD11EA4AB7700A62F83 /* LLPopupAnimator.m in Sources */,
+				75EB9DCF1EA4AB7700A62F83 /* LLAudioPlayerViewController.m in Sources */,
 				75EB9D971EA4AA6700A62F83 /* main.m in Sources */,
+				75EB9DE91EA4AF7C00A62F83 /* LLGifView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -429,8 +544,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 78835ZHBFS;
+				DEVELOPMENT_TEAM = D83H98L7Y7;
 				INFOPLIST_FILE = LLAudioPlayer/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Mr.Wang.LLAudioPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -441,8 +557,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 78835ZHBFS;
+				DEVELOPMENT_TEAM = D83H98L7Y7;
 				INFOPLIST_FILE = LLAudioPlayer/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Mr.Wang.LLAudioPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -518,6 +635,7 @@
 				75EB9DC11EA4AA6700A62F83 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		75EB9DC21EA4AA6700A62F83 /* Build configuration list for PBXNativeTarget "LLAudioPlayerTests" */ = {
 			isa = XCConfigurationList;
@@ -526,6 +644,7 @@
 				75EB9DC41EA4AA6700A62F83 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		75EB9DC51EA4AA6700A62F83 /* Build configuration list for PBXNativeTarget "LLAudioPlayerUITests" */ = {
 			isa = XCConfigurationList;
@@ -534,6 +653,7 @@
 				75EB9DC71EA4AA6700A62F83 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

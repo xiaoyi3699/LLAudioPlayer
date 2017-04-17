@@ -1,5 +1,5 @@
 //
-//  UIView+AddPart.h
+//  UIView+LLAudioPlayer.h
 //  test
 //
 //  Created by wangzhaomeng on 16/8/5.
@@ -36,5 +36,19 @@
 
 - (CGSize)LLSize;
 - (void)setLLSize:(CGSize)LLSize;
+
+/**
+ alertView弹出动画
+ */
+- (void)outFromCenterAnimationWithDuration:(NSTimeInterval)duration;
+
+@end
+
+@interface UIImage (LLAudioPlayer)
+
+/**
+ 根据颜色创建image<圆形>
+ */
++ (UIImage *)getRoundImageWithColor:(UIColor*)color size:(CGSize)size;
 
 @end

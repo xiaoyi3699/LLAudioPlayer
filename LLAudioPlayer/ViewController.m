@@ -39,7 +39,7 @@
     
     LLAudioPlayerViewController *audioPlayVC = [[LLAudioPlayerViewController alloc] init];
     audioPlayVC.flieModels = [_fileModels copy];
-    audioPlayVC.currentAudioIndex = 0;
+    audioPlayVC.currentIndex = 0;
     [self presentViewController:audioPlayVC animated:YES completion:nil];
 }
 

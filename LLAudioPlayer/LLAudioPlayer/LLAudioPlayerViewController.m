@@ -53,32 +53,21 @@ typedef enum {
     //监听音频播放结束
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayDidEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     
+    //监听程序退到后台
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive:)name:UIApplicationWillResignActiveNotification object:nil];
+    
     //监听音频播放中断
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieInterruption:) name:AVAudioSessionInterruptionNotification object:nil];
     
-    //注册后台播放
-    _bgTaskId = [self backgroundPlayerID:_bgTaskId];
-    
-    [self createViews];
-}
-
-//实现一下backgroundPlayerID:这个方法:
-- (UIBackgroundTaskIdentifier)backgroundPlayerID:(UIBackgroundTaskIdentifier)backTaskId
-{
-    //设置并激活音频会话类别
+    //设置并激活后台播放
     AVAudioSession *session=[AVAudioSession sharedInstance];
     [session setCategory:AVAudioSessionCategoryPlayback error:nil];
     [session setActive:YES error:nil];
+    
     //允许应用程序接收远程控制
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    //设置后台任务ID
-    UIBackgroundTaskIdentifier newTaskId=UIBackgroundTaskInvalid;
-    newTaskId=[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
-    if(newTaskId!=UIBackgroundTaskInvalid&&backTaskId!=UIBackgroundTaskInvalid)
-    {
-        [[UIApplication sharedApplication] endBackgroundTask:backTaskId];
-    }
-    return newTaskId;
+    
+    [self createViews];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -185,7 +174,7 @@ typedef enum {
     [_audioListBtn addTarget:self action:@selector(showAudioList:) forControlEvents:UIControlEventTouchUpInside];
     [bottomView addSubview:_audioListBtn];
     
-    [self refreshAudioPlayerWithIndex:_currentAudioIndex];
+    [self refreshAudioPlayerWithIndex:_currentIndex];
 }
 
 //音频文件错误提示
@@ -246,7 +235,7 @@ typedef enum {
     if (_flieModels.count > indexPath.row) {
         LLFileModel *model = _flieModels[indexPath.row];
         cell.textLabel.text = [model.fileName lastPathComponent];
-        if (indexPath.row == _currentAudioIndex) {
+        if (indexPath.row == _currentIndex) {
             cell.textLabel.textColor = [UIColor redColor];
         }
         else {
@@ -259,8 +248,8 @@ typedef enum {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (_flieModels.count > indexPath.row) {
         [[LLPopupAnimator animator] dismiss];
-        _currentAudioIndex = indexPath.row;
-        [self refreshAudioPlayerWithIndex:_currentAudioIndex];
+        _currentIndex = indexPath.row;
+        [self refreshAudioPlayerWithIndex:_currentIndex];
     }
 }
 
@@ -357,14 +346,14 @@ typedef enum {
 }
 
 #pragma mark - 设置锁屏界面
-//监听播放开始，设置锁屏界面的播放进度
+//监听播放开始
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary<NSString *,id> *)change
                        context:(void *)context {
     
     if ([keyPath isEqualToString:@"status"]) {
-        LLFileModel *model = _flieModels[_currentAudioIndex];
+        LLFileModel *model = _flieModels[_currentIndex];
         [self setPlayingInfoCenterWithModel:model];
     }
 }
@@ -384,11 +373,15 @@ typedef enum {
         [songInfo setObject:fileModel.albumTitle forKey:MPMediaItemPropertyAlbumTitle];
         //专辑缩略图
         [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+        //当前播放时长
+        [songInfo setObject:[NSNumber numberWithInt:(int)CMTimeGetSeconds(_audioPlayer.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+        //音频总时长
         [songInfo setObject:[NSNumber numberWithInt:(int)CMTimeGetSeconds(_audioPlayer.currentItem.duration)] forKey:MPMediaItemPropertyPlaybackDuration];
+        //播放进度光标的移动速率
         [songInfo setObject: [NSNumber numberWithInt:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
         
-        //设置锁屏状态下屏幕显示音乐信息
         [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
+        //设置锁屏状态下屏幕显示音乐信息
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     }
 }
@@ -480,7 +473,7 @@ typedef enum {
         }
         [self.audioListTableView reloadData];
         [[LLPopupAnimator animator] popUpView:self.audioListTableView animationStyle:LLAnimationStyleFromDownAnimation duration:.35 completion:nil];
-        [self.audioListTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_currentAudioIndex inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+        [self.audioListTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_currentIndex inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
     }
 }
 
@@ -493,7 +486,15 @@ typedef enum {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - 播放完成与中断的处理
+#pragma mark - 播放完成、中断、后台中的处理
+//程序退到后台
+- (void)applicationWillResignActive:(NSNotification *)notification {
+    
+    //注册后台播放,如果需要后台播放网络歌曲，必须注册taskId
+    _bgTaskId = [self backgroundPlayerID:_bgTaskId];
+    [self setPlayingInfoCenterWithModel:_flieModels[_currentIndex]];
+}
+
 //音频播放中断
 - (void)movieInterruption:(NSNotification *)notification {
     NSDictionary *interuptionDict = notification.userInfo;
@@ -502,17 +503,17 @@ typedef enum {
     switch (interuptionType) {
         case AVAudioSessionInterruptionTypeBegan:
         {
-            NSLog(@"收到中断，停止音频播放");
+            //收到中断，停止音频播放
             [self pause];
             break;
         }
         case AVAudioSessionInterruptionTypeEnded:
-            NSLog(@"系统中断结束");
+            //系统中断结束
             break;
     }
     switch ([seccondReason integerValue]) {
         case AVAudioSessionInterruptionOptionShouldResume:
-            NSLog(@"恢复音频播放");
+            //恢复音频播放
             [self play];
             break;
         default:
@@ -523,13 +524,13 @@ typedef enum {
 //音频播放完成时
 - (void)moviePlayDidEnd:(NSNotification *)notification {
     if (_audioPlayStyle == LLAudioPlayStyleOrder) {//顺序播放
-        _currentAudioIndex ++;
-        _currentAudioIndex = _currentAudioIndex%_flieModels.count;
+        _currentIndex ++;
+        _currentIndex = _currentIndex%_flieModels.count;
     }
     else if (_audioPlayStyle == LLAudioPlayStyleRandom) {//随机播放
-        _currentAudioIndex = random()%_flieModels.count;
+        _currentIndex = random()%_flieModels.count;
     }
-    [self refreshAudioPlayerWithIndex:_currentAudioIndex];
+    [self refreshAudioPlayerWithIndex:_currentIndex];
 }
 
 #pragma mark - private method
@@ -564,19 +565,19 @@ typedef enum {
 }
 
 - (void)gobackPrevious {//上一首
-    if (_currentAudioIndex == 0) {
-        _currentAudioIndex = _flieModels.count - 1;
+    if (_currentIndex == 0) {
+        _currentIndex = _flieModels.count - 1;
     }
     else {
-        _currentAudioIndex --;
+        _currentIndex --;
     }
-    [self refreshAudioPlayerWithIndex:_currentAudioIndex];
+    [self refreshAudioPlayerWithIndex:_currentIndex];
 }
 
 - (void)gotoNext {//下一首
-    _currentAudioIndex ++;
-    _currentAudioIndex = _currentAudioIndex%_flieModels.count;
-    [self refreshAudioPlayerWithIndex:_currentAudioIndex];
+    _currentIndex ++;
+    _currentIndex = _currentIndex%_flieModels.count;
+    [self refreshAudioPlayerWithIndex:_currentIndex];
 }
 
 //音频文件错误提示
@@ -595,6 +596,19 @@ typedef enum {
             [self.errorMessage removeFromSuperview];
         }];
     }
+}
+
+//注册taskId
+- (UIBackgroundTaskIdentifier)backgroundPlayerID:(UIBackgroundTaskIdentifier)backTaskId
+{
+    //设置后台任务ID
+    UIBackgroundTaskIdentifier newTaskId=UIBackgroundTaskInvalid;
+    newTaskId=[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
+    if(newTaskId!=UIBackgroundTaskInvalid&&backTaskId!=UIBackgroundTaskInvalid)
+    {
+        [[UIApplication sharedApplication] endBackgroundTask:backTaskId];
+    }
+    return newTaskId;
 }
 
 //将秒数换算成具体时长

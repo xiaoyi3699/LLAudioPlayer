@@ -19,6 +19,6 @@
 /**
  当前音频的索引
  */
-@property (nonatomic, assign) NSInteger currentAudioIndex;
+@property (nonatomic, assign) NSInteger currentIndex;
 
 @end

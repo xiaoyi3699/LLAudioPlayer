@@ -366,19 +366,19 @@ typedef enum {
         
         MPMediaItemArtwork *albumArt = [[MPMediaItemArtwork alloc] initWithImage:fileModel.coverImage];
         //歌曲名称
-        [songInfo setObject:fileModel.fileName forKey:MPMediaItemPropertyTitle];
+        [songInfo setValue:fileModel.fileName forKey:MPMediaItemPropertyTitle];
         //演唱者
-        [songInfo setObject:fileModel.artist forKey:MPMediaItemPropertyArtist];
+        [songInfo setValue:fileModel.artist forKey:MPMediaItemPropertyArtist];
         //专辑名
-        [songInfo setObject:fileModel.albumTitle forKey:MPMediaItemPropertyAlbumTitle];
+        [songInfo setValue:fileModel.albumTitle forKey:MPMediaItemPropertyAlbumTitle];
         //专辑缩略图
-        [songInfo setObject:albumArt forKey:MPMediaItemPropertyArtwork];
+        [songInfo setValue:albumArt forKey:MPMediaItemPropertyArtwork];
         //当前播放时长
-        [songInfo setObject:[NSNumber numberWithInt:(int)CMTimeGetSeconds(_audioPlayer.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+        [songInfo setValue:[NSNumber numberWithInt:(int)CMTimeGetSeconds(_audioPlayer.currentItem.currentTime)] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
         //音频总时长
-        [songInfo setObject:[NSNumber numberWithInt:(int)CMTimeGetSeconds(_audioPlayer.currentItem.duration)] forKey:MPMediaItemPropertyPlaybackDuration];
+        [songInfo setValue:[NSNumber numberWithInt:(int)CMTimeGetSeconds(_audioPlayer.currentItem.duration)] forKey:MPMediaItemPropertyPlaybackDuration];
         //播放进度光标的移动速率
-        [songInfo setObject: [NSNumber numberWithInt:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+        [songInfo setValue: [NSNumber numberWithInt:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
         
         [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
         //设置锁屏状态下屏幕显示音乐信息

@@ -47,13 +47,6 @@
     LLAudioPlayerViewController *audioPlayVC = [[LLAudioPlayerViewController alloc] init];
     audioPlayVC.flieModels = [_fileModels copy];
     audioPlayVC.currentIndex = 0;
-    
-    //播放本地音频
-    audioPlayVC.flieType = LLAudioResourceTypeLocal;
-    
-    //播放网络音频
-    //audioPlayVC.flieType = LLAudioResourceTypeRemote;
-    
     [self presentViewController:audioPlayVC animated:YES completion:nil];
 }
 

@@ -259,6 +259,10 @@ typedef enum {
 - (void)refreshAudioPlayerWithIndex:(NSInteger)index {
     if (index < 0 || index >= _flieModels.count) return;
     
+    LLFileModel *model  = _flieModels[index];
+    
+    if (model.filePath == nil) return;
+    
     if (_audioPlayer) {
         [_audioPlayer pause];
     }
@@ -267,30 +271,25 @@ typedef enum {
         [_audioListTableView reloadData];
     }
     
-    LLFileModel *model  = _flieModels[index];
     _gifView.hidden     = YES;
     _titleLabel.text    = model.fileName;
     _currentTime.text   = @"00:00";
     _totalTime.text     = @"00:00";
     _progressSlider.value = 0.0;
     
-    NSURL *fileURL;
-    if (_flieType == LLAudioResourceTypeLocal) {
-        if ([[NSFileManager defaultManager] fileExistsAtPath:model.filePath]) {
-            fileURL = [NSURL fileURLWithPath:model.filePath];
-        }
-    }
-    else {
-        fileURL = [NSURL URLWithString:model.filePath];
-        if (fileURL == nil) {
-            fileURL = [NSURL URLWithString:[model.filePath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-        }
-    }
+    NSURL *fileURL = [NSURL URLWithString:model.filePath];
     if (fileURL == nil) {
-        [self showErrorMessage];
+        fileURL = [NSURL URLWithString:[model.filePath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    }
+    if ([[UIApplication sharedApplication] canOpenURL:fileURL]) {
+        [self playWithURL:fileURL];
+    }
+    else if ([[NSFileManager defaultManager] fileExistsAtPath:model.filePath]) {
+        fileURL = [NSURL fileURLWithPath:model.filePath];
+        [self playWithURL:fileURL];
     }
     else {
-        [self playWithURL:fileURL];
+        [self showErrorMessage];
     }
 }
 

@@ -275,10 +275,15 @@ typedef enum {
     _progressSlider.value = 0.0;
     
     NSURL *fileURL;
-    if (model.filePath.length) {
+    if (_flieType == LLAudioResourceTypeLocal) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:model.filePath]) {
+            fileURL = [NSURL fileURLWithPath:model.filePath];
+        }
+    }
+    else {
         fileURL = [NSURL URLWithString:model.filePath];
         if (fileURL == nil) {
-            fileURL = [NSURL fileURLWithPath:model.filePath];
+            fileURL = [NSURL URLWithString:[model.filePath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         }
     }
     if (fileURL == nil) {

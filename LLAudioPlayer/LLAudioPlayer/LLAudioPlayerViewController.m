@@ -42,6 +42,7 @@ typedef enum {
 
 @property (nonatomic, strong) UIButton          *audioListBtn;           //歌单按钮
 @property (nonatomic, strong) UITableView       *audioListTableView;     //歌单列表
+@property (nonatomic, assign) id                playTimeObserver;
 
 @end
 
@@ -303,9 +304,15 @@ typedef enum {
             //将加载好的资源放入AVPlayerItem 中，item中包含视频资源数据,视频资源时长、当前播放的时间点等信息
             LLAVPlayerItem *item = [LLAVPlayerItem playerItemWithAsset:asset];
             item.observer = self;
+            
+            //观察播放状态
             [item addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
             
+            //观察缓冲进度
+            [item addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
+            
             if (_audioPlayer) {
+                [_audioPlayer removeTimeObserver:_playTimeObserver];
                 [_audioPlayer replaceCurrentItemWithPlayerItem:item];
             }
             else {
@@ -316,22 +323,16 @@ typedef enum {
             __weak AVPlayer *weakPlayer     = _audioPlayer;
             __weak UISlider *weakSlider     = _progressSlider;
             __weak UILabel *weakCurrentTime = _currentTime;
-            __weak UILabel *weakTotalTime   = _totalTime;
+            //__weak UILabel *weakTotalTime   = _totalTime;
             __weak typeof(self) weakSelf    = self;
-            [_audioPlayer addPeriodicTimeObserverForInterval:CMTimeMake(1.0, 1.0) queue:dispatch_get_global_queue(0, 0) usingBlock:^(CMTime time) {
+            _playTimeObserver = [_audioPlayer addPeriodicTimeObserverForInterval:CMTimeMake(1.0, 1.0) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
                 //获取当前播放时间
-                NSInteger current = CMTimeGetSeconds(weakPlayer.currentItem.currentTime);
-                //总时间
-                weakSelf.dur = CMTimeGetSeconds(weakPlayer.currentItem.duration);
+                CGFloat current = CMTimeGetSeconds(weakPlayer.currentItem.currentTime);
                 
-                float pro = current*1.0/weakSelf.dur;
+                float pro = current/weakSelf.dur;
                 if (pro >= 0.0 && pro <= 1.0) {
-                    //回到主线程刷新UI
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        weakSlider.value     = pro;
-                        weakCurrentTime.text = [weakSelf getTime:current];
-                        weakTotalTime.text   = [weakSelf getTime:weakSelf.dur];
-                    });
+                    weakSlider.value     = pro;
+                    weakCurrentTime.text = [weakSelf getTime:current];
                 }
             }];
         }
@@ -350,14 +351,40 @@ typedef enum {
                         change:(NSDictionary<NSString *,id> *)change
                        context:(void *)context {
     
+    AVPlayerItem *item = (AVPlayerItem *)object;
     if ([keyPath isEqualToString:@"status"]) {
-        
-        if (self.audioPlayer.status == AVPlayerItemStatusReadyToPlay) {
+        if (item.status == AVPlayerStatusReadyToPlay) {
+            
+            //获取当前播放时间
+            NSInteger current = CMTimeGetSeconds(item.currentTime);
+            //总时间
+            self.dur = CMTimeGetSeconds(item.duration);
+            
+            float pro = current*1.0/self.dur;
+            if (pro >= 0.0 && pro <= 1.0) {
+                _progressSlider.value  = pro;
+                _currentTime.text      = [self getTime:current];
+                _totalTime.text        = [self getTime:self.dur];
+            }
+            
             LLFileModel *model = _flieModels[_currentIndex];
             [self setPlayingInfoCenterWithModel:model];
             
             _gifView.hidden = NO;
             [self rePlay];
+        }
+        else if (item.status == AVPlayerStatusFailed) {
+            NSLog(@"AVPlayerStatusFailed");
+        }
+        else {
+            NSLog(@"AVPlayerStatusUnknown");
+        }
+        
+    } else if ([keyPath isEqualToString:@"loadedTimeRanges"]) {
+        NSTimeInterval timeInterval = [self availableDuration];
+        float pro = timeInterval/self.dur;
+        if (pro >= 0.0 && pro <= 1.0) {
+            NSLog(@"缓冲进度：%f",pro);
         }
     }
 }
@@ -538,6 +565,14 @@ typedef enum {
 }
 
 #pragma mark - private method
+- (CGFloat)availableDuration {//计算缓冲时间
+    NSArray *loadedTimeRanges = [_audioPlayer.currentItem loadedTimeRanges];
+    CMTimeRange range = [loadedTimeRanges.firstObject CMTimeRangeValue];
+    CGFloat start = CMTimeGetSeconds(range.start);
+    CGFloat duration = CMTimeGetSeconds(range.duration);
+    return (start + duration);
+}
+
 - (void)play {//播放<动画恢复>
     if (_audioPlayer) {
         [_audioPlayer play];
@@ -636,7 +671,9 @@ typedef enum {
 //移除相关监听
 - (void)dealloc {
     NSLog(@"音乐播放器释放");
+    [_audioPlayer removeTimeObserver:_playTimeObserver];
     [_audioPlayer.currentItem removeObserver:self forKeyPath:@"status"];
+    [_audioPlayer.currentItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

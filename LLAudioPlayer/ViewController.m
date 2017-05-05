@@ -26,7 +26,13 @@
     _fileModels = [NSMutableArray arrayWithCapacity:4];
     for (NSInteger i = 0; i < 4; i ++) {
         LLFileModel *fileModel = [LLFileModel new];
+        
+        //播放本地音频
         fileModel.filePath    = [[NSBundle mainBundle] pathForResource:filePaths[i] ofType:@"mp3"];
+        
+        //播放网络音频
+        //fileModel.filePath    = @"http://sc1.111ttt.com/2016/1/10/09/203091044531.mp3";
+        
         fileModel.fileName    = titles[i];
         fileModel.coverImage  = [UIImage imageNamed:@"audioCover"];
         fileModel.artist      = artists[i];

@@ -14,6 +14,7 @@
 - (void)dealloc {
     if (self.observer) {
         [self removeObserver:self.observer forKeyPath:@"status"];
+        [self removeObserver:self.observer forKeyPath:@"loadedTimeRanges"];
     }
 }
 

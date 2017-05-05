@@ -311,10 +311,6 @@ typedef enum {
             else {
                 _audioPlayer = [[AVPlayer alloc] initWithPlayerItem:item];
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                _gifView.hidden = NO;
-                [self rePlay];
-            });
             //需要时时显示播放的进度
             //根据播放的帧数、速率，进行时间的异步(在子线程中完成)获取
             __weak AVPlayer *weakPlayer     = _audioPlayer;
@@ -355,8 +351,14 @@ typedef enum {
                        context:(void *)context {
     
     if ([keyPath isEqualToString:@"status"]) {
-        LLFileModel *model = _flieModels[_currentIndex];
-        [self setPlayingInfoCenterWithModel:model];
+        
+        if (self.audioPlayer.status == AVPlayerItemStatusReadyToPlay) {
+            LLFileModel *model = _flieModels[_currentIndex];
+            [self setPlayingInfoCenterWithModel:model];
+            
+            _gifView.hidden = NO;
+            [self rePlay];
+        }
     }
 }
 

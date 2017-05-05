@@ -31,6 +31,7 @@
         fileModel.filePath    = [[NSBundle mainBundle] pathForResource:filePaths[i] ofType:@"mp3"];
         
         //播放网络音频
+        //有一部分文件较大的网络音频可能需要缓存一定时间之后才开始播放，如：<http://oopas6scq.bkt.clouddn.com/music/任月丽 - 风中奇缘.mp3>，请耐心等待
         //fileModel.filePath    = @"http://sc1.111ttt.com/2016/1/10/09/203091044531.mp3";
         
         fileModel.fileName    = titles[i];

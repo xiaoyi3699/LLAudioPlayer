@@ -32,7 +32,6 @@ typedef enum {
 
 @interface LLPopupAnimator : UIView
 
-@property (nonatomic, assign) BOOL isHiddenWhenClickOutBtn;
 @property (nonatomic, weak)   id<LLPopupAnimatorDelegate> delegate;
 
 + (instancetype)animator;

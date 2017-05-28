@@ -195,7 +195,6 @@ typedef enum {
 #pragma mark - 歌单列表
 - (UITableView *)audioListTableView {
     if (_audioListTableView == nil) {
-        [LLPopupAnimator animator].isHiddenWhenClickOutBtn = YES;
         [LLPopupAnimator animator].delegate = self;
         
         _audioListTableView = [[UITableView alloc] init];
